@@ -1,0 +1,18 @@
+{
+    "name": "SparkyBot",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "6c32e5c6-3c26-4a46-9b13-1521d0c07a9f",
+            "appPassword": "&L1[v6;]?JilTHTl[CRyaWv22z]h-",
+            "endpoint": "http://localhost:3978/api/messages",
+            "id": "4cacfce0-5a11-11e9-bd30-3fc8cdc053ff",
+            "name": "http://localhost:3978/api/messages"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "overrides": null,
+    "path": "C:\\Users\\Sokha.Thorn\\Downloads\\Sparky_Bot-src\\SparkyBot.bot"
+}
