@@ -30,7 +30,7 @@ namespace Microsoft.BotBuilderSamples
         {
             var timex = (string)stepContext.Options;
 
-            var promptMsg = "When would you like to travel?";
+            var promptMsg = "When would you like to travel?????????????????????";
             var repromptMsg = $"I'm sorry, to make your booking please enter a full travel date including Day Month and Year.";
 
             if (timex == null)
