@@ -114,7 +114,9 @@ namespace Microsoft.BotBuilderSamples
             }
             else
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you."), cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(MainDialog), cancellationToken);
+
+ //               await stepContext.BeginDialogAsync().Context.SendActivityAsync(MessageFactory.Text("Thank you."), cancellationToken);
             }
             return await stepContext.EndDialogAsync();
         }
