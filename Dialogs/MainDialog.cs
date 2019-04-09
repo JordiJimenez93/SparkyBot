@@ -32,7 +32,7 @@ namespace Microsoft.BotBuilderSamples
             _logger = logger;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new BookingDialog());
+            AddDialog(new FAQDialog());
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -79,7 +79,7 @@ namespace Microsoft.BotBuilderSamples
             }
             else
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("What can I help you with today?") }, cancellationToken);
+                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Good morning Laura! I am Sparky! I would like to help you in your Sunweb adventure! ") }, cancellationToken);
             }
         }
 
@@ -90,13 +90,13 @@ namespace Microsoft.BotBuilderSamples
                     ?
                 await LuisHelper.ExecuteLuisQuery(_configuration, _logger, stepContext.Context, cancellationToken, _faqData)
                     :
-                null;
+                new FAQModel();
 
             // In this sample we only have a single Intent we are concerned with. However, typically a scneario
             // will have multiple different Intents each corresponding to starting a different child Dialog.
 
             // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-            return await stepContext.BeginDialogAsync(nameof(BookingDialog), faqModel, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(FAQDialog), faqModel, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -104,15 +104,12 @@ namespace Microsoft.BotBuilderSamples
             // If the child dialog ("BookingDialog") was cancelled or the user failed to confirm, the Result here will be null.
             if (stepContext.Result != null)
             {
-                var result = (BookingDetails)stepContext.Result;
+                var result = (FAQModel)stepContext.Result;
 
-                // Now we have all the booking details call the booking service.
-
-                // If the call to the booking service was successful tell the user.
-
-                var timeProperty = new TimexProperty(result.TravelDate);
-                var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
-                var msg = $"I have you booked to {result.Destination} from {result.Origin} on {travelDateMsg}";
+                //var timeProperty = new TimexProperty(result.TravelDate);
+                //var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
+                //var msg = $"I have you booked to {result.Destination} from {result.Origin} on {travelDateMsg}";
+                var msg = $"Thanks";
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
             }
             else

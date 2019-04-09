@@ -29,7 +29,7 @@ namespace Microsoft.BotBuilderSamples
             CancellationToken cancellationToken,
             Welcome faqData)
         {
-            FAQModel faqModel = null;
+            FAQModel faqModel = new FAQModel();
 
             try
             {
@@ -42,9 +42,9 @@ namespace Microsoft.BotBuilderSamples
                 var recognizerResult = await recognizer.RecognizeAsync(turnContext, cancellationToken);
 
                 var (intent, score) = recognizerResult.GetTopScoringIntent();
-                if (score > 0.7)
+                if (score > 0.7 && intent != "None")
                 {
-                    faqModel = MapToFAQModel(intent, faqData);
+                    faqModel = MapToFAQModel(intent, faqData, score);
                 }
 
                 //if (intent == "Book_flight")
@@ -66,7 +66,7 @@ namespace Microsoft.BotBuilderSamples
             return faqModel;
         }
 
-        private static FAQModel MapToFAQModel(string id, Welcome faqData)
+        private static FAQModel MapToFAQModel(string id, Welcome faqData, double score)
         {
             var kb = faqData.KnowledgeBases.FirstOrDefault(k => k.NodeId == Convert.ToInt32(id));
 
@@ -77,6 +77,7 @@ namespace Microsoft.BotBuilderSamples
                                Id = id,
                                Faq = kb.DisplayText,
                                Answer = kb.SolutionText,
+                               Score = score,
                                Categories = kb.Categories
                            };
             }

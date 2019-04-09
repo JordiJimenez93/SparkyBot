@@ -8,6 +8,8 @@
 
         public string Answer { get; set; }
 
+        public double Score { get; set; }
+
         public object[] Categories { get; set; }
     }
 }

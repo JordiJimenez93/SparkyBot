@@ -3,6 +3,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using CoreBot.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
@@ -19,9 +20,9 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new DateResolverDialog());
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                DestinationStepAsync,
-                OriginStepAsync,
-                TravelDateStepAsync,
+                FAQStepAsync,
+     //           OriginStepAsync,
+     //           TravelDateStepAsync,
                 ConfirmStepAsync,
                 FinalStepAsync,
             }));
@@ -30,17 +31,17 @@ namespace Microsoft.BotBuilderSamples
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> DestinationStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FAQStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var faqModel = (FAQModel)stepContext.Options;
 
-            if (bookingDetails.Destination == null)
+            if (faqModel.Answer == null)
             {
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where would you like to travel to?") }, cancellationToken);
             }
             else
             {
-                return await stepContext.NextAsync(bookingDetails.Destination);
+                return await stepContext.NextAsync(faqModel.Answer);
             }
         }
 
@@ -59,29 +60,29 @@ namespace Microsoft.BotBuilderSamples
                 return await stepContext.NextAsync(bookingDetails.Origin);
             }
         }
-        private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+        //private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //    var faqModel = (FAQModel)stepContext.Options;
 
-            bookingDetails.Origin = (string)stepContext.Result;
+        //    faqModel.Answer = (string)stepContext.Result;
 
-            if (bookingDetails.TravelDate == null || IsAmbiguous(bookingDetails.TravelDate))
-            {
-                return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), bookingDetails.TravelDate, cancellationToken);
-            }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.TravelDate);
-            }
-        }
+        //    if (faqModel.TravelDate == null || IsAmbiguous(faqModel.TravelDate))
+        //    {
+        //        return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), faqModel.TravelDate, cancellationToken);
+        //    }
+        //    else
+        //    {
+        //        return await stepContext.NextAsync(faqModel.TravelDate);
+        //    }
+        //}
 
         private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var faqModel = (FAQModel)stepContext.Options;
 
-            bookingDetails.TravelDate = (string)stepContext.Result;
+            faqModel.Answer = (string)stepContext.Result;
 
-            var msg = $"Please confirm, I have you traveling to: {bookingDetails.Destination} from: {bookingDetails.Origin} on: {bookingDetails.TravelDate}";
+            var msg = faqModel.Answer;
 
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
         }
@@ -90,9 +91,9 @@ namespace Microsoft.BotBuilderSamples
         {
             if ((bool)stepContext.Result == true)
             {
-                var bookingDetails = (BookingDetails)stepContext.Options;
+                var faqModel = (FAQModel)stepContext.Options;
 
-                return await stepContext.EndDialogAsync(bookingDetails);
+                return await stepContext.EndDialogAsync(faqModel);
             }
             else
             {
