@@ -73,7 +73,7 @@ namespace Microsoft.BotBuilderSamples
             if (LuisHelper.LuisCredentialsPresent(_configuration))
             {
                 await stepContext.Context.SendActivityAsync(
-                    MessageFactory.Text("NOTE: EH LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file."), cancellationToken);
+                    MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file."), cancellationToken);
 
                 return await stepContext.NextAsync(null, cancellationToken);
             }
