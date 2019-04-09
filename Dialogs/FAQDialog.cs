@@ -37,7 +37,10 @@ namespace Microsoft.BotBuilderSamples
 
             if (faqModel.Answer == null)
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where would you like to travel to?") }, cancellationToken);
+//                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Say what?") }, cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Say what?"), cancellationToken);
+
+                return await stepContext.EndDialogAsync(null);
             }
             else
             {
