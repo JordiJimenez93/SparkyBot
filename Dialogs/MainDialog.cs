@@ -2,13 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using CoreBot.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
+using Newtonsoft.Json;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -17,9 +21,14 @@ namespace Microsoft.BotBuilderSamples
         protected readonly IConfiguration _configuration;
         protected readonly ILogger _logger;
 
+        public Welcome _faqData;
+
         public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger)
             : base(nameof(MainDialog))
         {
+            // load all kana data
+            _faqData = GetFromJson();
+
             _configuration = configuration;
             _logger = logger;
 
@@ -34,6 +43,30 @@ namespace Microsoft.BotBuilderSamples
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
+        }
+
+        private Welcome GetFromJson()
+        {
+            JsonSerializer serializer = new JsonSerializer();
+            Welcome welcome = null;
+            using (FileStream s = File.Open("KanaResults.json", FileMode.Open))
+            {
+                using (StreamReader sr = new StreamReader(s))
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader.TokenType == JsonToken.StartObject)
+                            {
+                                welcome = serializer.Deserialize<Welcome>(reader);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return welcome;
         }
 
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
