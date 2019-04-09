@@ -2,10 +2,12 @@
 {
     public class FAQModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
+
+        public string Faq { get; set; }
 
         public string Answer { get; set; }
 
-        public string Category { get; set; }
+        public object[] Categories { get; set; }
     }
 }

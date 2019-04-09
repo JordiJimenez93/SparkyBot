@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,7 +70,7 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(_configuration["LuisAppId"]) || string.IsNullOrEmpty(_configuration["LuisAPIKey"]) || string.IsNullOrEmpty(_configuration["LuisAPIHostName"]))
+            if (LuisHelper.LuisCredentialsPresent(_configuration))
             {
                 await stepContext.Context.SendActivityAsync(
                     MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file."), cancellationToken);
@@ -87,17 +86,17 @@ namespace Microsoft.BotBuilderSamples
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
-            var bookingDetails = stepContext.Result != null
+            var faqModel = stepContext.Result != null
                     ?
-                await LuisHelper.ExecuteLuisQuery(_configuration, _logger, stepContext.Context, cancellationToken)
+                await LuisHelper.ExecuteLuisQuery(_configuration, _logger, stepContext.Context, cancellationToken, _faqData)
                     :
-                new BookingDetails();
+                null;
 
             // In this sample we only have a single Intent we are concerned with. However, typically a scneario
             // will have multiple different Intents each corresponding to starting a different child Dialog.
 
             // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-            return await stepContext.BeginDialogAsync(nameof(BookingDialog), bookingDetails, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(BookingDialog), faqModel, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
